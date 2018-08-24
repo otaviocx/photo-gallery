@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { graphqlExpress } = require('apollo-server-express');
+const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { apolloUploadExpress } = require('apollo-upload-server');
 const jwt = require('express-jwt');
 const { createDatabase } = require('./database');
@@ -21,6 +21,13 @@ const createServer = async ({ secret = DEFAULT_SECRET }) => {
         bodyParser.json(),
         apolloUploadExpress(),
         graphqlExpress(({ user }) => ({ schema, context: { user, db } })),
+    );
+    app.use(
+        '/graphiql',
+        graphiqlExpress({
+            endpointURL: '/graphql',
+            subscriptionsEndpoint: `ws://localhost:${DEFAULT_PORT}/subscriptions`,
+        }),
     );
     return app;
 };
