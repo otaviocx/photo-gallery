@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import AllPhotos from '../containers/allPhotos';
 import Photo from './Photo';
 
-export const PhotoListInner = ({ loading, error, data }) => {
+const PhotoListInner = ({ loading, error, data }) => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error :(</div>;
 
@@ -30,4 +30,4 @@ PhotoListInner.defaultProps = {
     data: {},
 };
 
-export const PhotoList = () => <AllPhotos>{PhotoListInner}</AllPhotos>;
+export default () => <AllPhotos>{PhotoListInner}</AllPhotos>;
