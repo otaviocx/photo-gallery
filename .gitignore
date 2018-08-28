@@ -10,6 +10,7 @@ node_modules
 build
 .nyc_output
 coverage
+README_old.md
 
 npm-debug.log*
 yarn-debug.log*
