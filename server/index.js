@@ -70,10 +70,11 @@ const createServer = async ({ secret = DEFAULT_SECRET }) => {
         addDecodedTokenToRequest(),
         bodyParser.json(),
         apolloUploadExpress(),
-        graphqlExpress(({ user }) => ({ 
+        graphqlExpress(({ user, token }) => ({ 
             schema, 
             context: { 
                 user,
+                ...token,
                 ...createServices(user) 
             } 
         })),

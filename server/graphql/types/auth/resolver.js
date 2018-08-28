@@ -11,7 +11,7 @@ module.exports = {
                 authService.login({username, password});
             },
 
-            logout: async (root, {token}, {authService}) => {
+            logout: async (root, args, {token, authService}) => {
                 authService.logout(token);
             },
         },
