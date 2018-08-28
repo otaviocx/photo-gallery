@@ -18,17 +18,19 @@ const { Repository } = require('./database/Repository');
 const DEFAULT_PORT = 3001;
 const DEFAULT_SECRET = 'totally-unguessable-jwt-secret';
 
-const isRevokedCallback = async (req, payload, done) => {
-    const isRevoked = await JwtBlacklistService.getInstance().isRevoked(payload);
-    done(null, isRevoked);
-}
-
-const createServices = (user) => { 
+const createRepositories = () => {
     const userRepository = new Repository('user');
     const photoRepository = new Repository('photo');
-    
-    const userService = new UserService(userRepository);
-    const photoService = new PhotoService(photoRepository, user);
+
+    return {
+        userRepository,
+        photoRepository,
+    }
+}
+
+const createServices = (user, repos) => { 
+    const userService = new UserService(repos.userRepository);
+    const photoService = new PhotoService(repos.photoRepository, user);
     const jwtBlacklistService = JwtBlacklistService.getInstance();
     const authService = new AuthService(userService, jwtBlacklistService, DEFAULT_SECRET);
     
@@ -39,26 +41,36 @@ const createServices = (user) => {
     }
 }
 
-const addDecodedTokenToRequest = () => (req) => {
+const isRevokedCallback = async (req, payload, done) => {
+    const isRevoked = await JwtBlacklistService.getInstance().isRevoked(payload);
+    done(null, isRevoked);
+}
+
+const addDecodedTokenToRequest = () => (req, res, next) => {
     if (!req.headers || !req.headers.authorization) {
+        next();
         return;
     }
     const parts = req.headers.authorization.split(' ');
     if (parts.length != 2) {
+        next();
         return;
     }
     const scheme = parts[0];
     const token = parts[1];
     if (!/^Bearer$/i.test(scheme)) {
+        next();
         return;
     }
     const dtoken = jwt.decode(token);
     set(req, 'token', dtoken.payload);
+    next();
 }
 
 const createServer = async ({ secret = DEFAULT_SECRET }) => {
     const app = express();
     const schema = await createGraphQLSchema();
+    const repos = createRepositories();
     app.use(
         '/graphql',
         cors(),
@@ -75,7 +87,7 @@ const createServer = async ({ secret = DEFAULT_SECRET }) => {
             context: { 
                 user,
                 ...token,
-                ...createServices(user) 
+                ...createServices(user, repos) 
             } 
         })),
     );
