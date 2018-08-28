@@ -9,6 +9,10 @@ class UserService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Generate a hash of a string value.
+     * @param {String} value The value to generate the hash.
+     */
     getHash(value) {
         return crypto.createHash('sha256').update(value, 'utf8').digest();
     }

@@ -25,10 +25,16 @@ const isRevokedCallback = async (req, payload, done) => {
 const createServices = (user) => { 
     const userRepository = new Repository('user');
     const photoRepository = new Repository('photo');
-    return {
-        userService: new UserService(userRepository),
-        photoService: new PhotoService(photoRepository, user),
-        authService: new AuthService(JwtBlacklistService.getInstance())
+    
+    const userService = new UserService(userRepository);
+    const photoService = new PhotoService(photoRepository, user);
+    const jwtBlacklistService = JwtBlacklistService.getInstance();
+    const authService = new AuthService(userService, jwtBlacklistService, DEFAULT_SECRET);
+    
+    return { 
+        userService, 
+        photoService, 
+        authService, 
     }
 }
 
