@@ -3,9 +3,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { apolloUploadExpress } = require('apollo-upload-server');
-const jwt = require('express-jwt');
-const { createDatabase } = require('./database');
+const jwtExpress = require('express-jwt');
+const jwt = require('jsonwebtoken');
 const createGraphQLSchema = require('./graphql');
+var set = require('lodash.set');
 
 const { AuthService } = require('./graphql/types/auth/AuthService');
 const { PhotoService } = require('./graphql/types/photo/PhotoService');
@@ -38,18 +39,35 @@ const createServices = (user) => {
     }
 }
 
+const addDecodedTokenToRequest = () => (req) => {
+    if (!req.headers || !req.headers.authorization) {
+        return;
+    }
+    const parts = req.headers.authorization.split(' ');
+    if (parts.length != 2) {
+        return;
+    }
+    const scheme = parts[0];
+    const token = parts[1];
+    if (!/^Bearer$/i.test(scheme)) {
+        return;
+    }
+    const dtoken = jwt.decode(token);
+    set(req, 'token', dtoken.payload);
+}
+
 const createServer = async ({ secret = DEFAULT_SECRET }) => {
     const app = express();
     const schema = await createGraphQLSchema();
-    const db = await createDatabase();
     app.use(
         '/graphql',
         cors(),
-        jwt({ 
+        jwtExpress({ 
             secret, 
             credentialsRequired: false,
             isRevoked: isRevokedCallback
         }),
+        addDecodedTokenToRequest(),
         bodyParser.json(),
         apolloUploadExpress(),
         graphqlExpress(({ user }) => ({ 

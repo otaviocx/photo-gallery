@@ -12,7 +12,7 @@ module.exports = {
             },
 
             logout: async (root, {token}, {authService}) => {
-                authService.logout(token)
+                authService.logout(token);
             },
         },
     },
