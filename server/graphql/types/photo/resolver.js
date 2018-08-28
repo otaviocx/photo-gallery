@@ -22,42 +22,20 @@ module.exports = {
                     .exec(),
         },
         Query: {
-            photos: (root, args, { user, db }) =>
-                db.photos
-                    .cfind(user
-                        ? {
-                            $or: {
-                                $and: { private: true, ownerId: parseInt(user.id, 10) },
-                                private: false,
-                            },
-                        }
-                        : { private: false })
-                    .sort({ createdAt: -1 })
-                    .exec(),
-            photo: (root, { id }, { db, user }) =>
-                db.photos.findOne({
-                    $and: [
-                        { _id: parseInt(id, 10) },
-                        user
-                            ? {
-                                $or: {
-                                    $and: { private: true, ownerId: user.id },
-                                    private: false,
-                                },
-                            }
-                            : { private: false },
-                    ],
-                }),
+            photos: (root, args, { photoService }) =>
+                photoService.listPhotos(),
+            photo: (root, { id }, { photoService }) =>
+                photoService.findOnePhoto(id),
         },
         Mutation: {
-            uploadPhoto: async (root, args, { user }) => {
-                // TODO: handle uploadPhoto
+            uploadPhoto: async (root, {image, caption, isPrivate}, { photoService }) => {
+                photoService.uploadPhoto(image, caption, isPrivate);
             },
-            editPhoto: async (root, args, { user }) => {
-                // TODO: handle editPhoto
+            editPhoto: async (root, {id, caption, isPrivate}, { photoService }) => {
+                photoService.updatePhoto(id, caption, isPrivate);
             },
-            deletePhoto: async (root, args, { user }) => {
-                // TODO: handle deletePhoto
+            deletePhoto: async (root, {id}, { photoService }) => {
+                photoService.removePhoto(id);
             },
         },
         Subscription: {
