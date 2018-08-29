@@ -14,7 +14,7 @@ class UserService {
      * @param {String} value The value to generate the hash.
      */
     getHash(value) {
-        return crypto.createHash('sha256').update(value, 'utf8').digest();
+        return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
     }
 
     /**
@@ -29,9 +29,9 @@ class UserService {
             })
             .catch((e) => {
                 if (e.errorType === 'uniqueViolated') {
-                throw new UserInputError('username is already in use');
-            }
-        });
+                    throw new UserInputError('username is already in use');               
+                }
+            });
     }
 
     /**

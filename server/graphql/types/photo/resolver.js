@@ -29,13 +29,13 @@ module.exports = {
         },
         Mutation: {
             uploadPhoto: async (root, {image, caption, isPrivate}, { photoService }) => {
-                photoService.uploadPhoto(image, caption, isPrivate);
+                return photoService.uploadPhoto(image, caption, isPrivate);
             },
             editPhoto: async (root, {id, caption, isPrivate}, { photoService }) => {
-                photoService.updatePhoto(id, caption, isPrivate);
+                return photoService.updatePhoto(id, caption, isPrivate);
             },
             deletePhoto: async (root, {id}, { photoService }) => {
-                photoService.removePhoto(id);
+                return photoService.removePhoto(id);
             },
         },
         Subscription: {
