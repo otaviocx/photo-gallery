@@ -20,8 +20,9 @@
     "nedb": "^1.8.0",
     "nedb-promise": "^2.0.1",
     "node-fetch": "^2.1.2",
-    "node-persist": "^3.0.1",
+    "node-persist": "2.1.0",
     "schemaglue": "^2.0.2",
+    "uuid": "^3.3.2",
     "yargs": "^11.1.0"
   },
   "devDependencies": {
