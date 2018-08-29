@@ -111,4 +111,13 @@ class PhotoService {
     }
 }
 
-module.exports = { PhotoService }
+const PHOTO_ADDED = 'photoAdded';
+const PHOTO_EDITED = 'photoEdited';
+const PHOTO_DELETED = 'photoDeleted';
+
+module.exports = { 
+    PhotoService,
+    PHOTO_ADDED,
+    PHOTO_EDITED,
+    PHOTO_DELETED, 
+}

@@ -15,6 +15,7 @@
     "express-jwt": "^5.3.1",
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.5.0",
+    "graphql-subscriptions": "^0.5.8",
     "graphql-tools": "^3.0.2",
     "jsonwebtoken": "^8.3.0",
     "nedb": "^1.8.0",
@@ -22,6 +23,7 @@
     "node-fetch": "^2.1.2",
     "node-persist": "2.1.0",
     "schemaglue": "^2.0.2",
+    "subscriptions-transport-ws": "^0.9.14",
     "uuid": "^3.3.2",
     "yargs": "^11.1.0"
   },

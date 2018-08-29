@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const { ApolloError } = require('apollo-server');
 const { apolloUploadExpress } = require('apollo-upload-server');
 const jwtExpress = require('express-jwt');
 const jwt = require('jsonwebtoken');
 const createGraphQLSchema = require('./graphql');
-var set = require('lodash.set');
+const set = require('lodash.set');
+const { execute, subscribe } = require('graphql');
+const { createServer } = require('http');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
 
 const { AuthService } = require('./graphql/types/auth/AuthService');
 const { PhotoService } = require('./graphql/types/photo/PhotoService');
@@ -68,10 +72,10 @@ const addDecodedTokenToRequest = () => (req, res, next) => {
     next();
 }
 
-const createServer = async ({ secret = DEFAULT_SECRET }) => {
+const createGraphqlServer = async ({ schema, secret = DEFAULT_SECRET }) => {
     const app = express();
-    const schema = await createGraphQLSchema();
     const repos = createRepositories();
+
     app.use(
         '/graphql',
         cors(),
@@ -103,13 +107,41 @@ const createServer = async ({ secret = DEFAULT_SECRET }) => {
 };
 
 const launchServer = async ({ port = DEFAULT_PORT, secret }) => {
-    const server = await createServer({ secret });
+    const schema = await createGraphQLSchema();
+    const server = await createGraphqlServer({ schema, secret });
+    const ws = createServer(server);
     return new Promise((resolve, reject) =>
-        server.listen(port, err => (err ? reject(err) : resolve({ port, server }))));
+        ws.listen(port, err => (err ? reject(err) : resolve({ port, server })))).then(() => {
+            new SubscriptionServer({
+                execute,
+                subscribe,
+                schema,
+                onConnect(connectionParams, ws) {
+                    return new Promise((res) => {
+                        const authorization = ws.upgradeReq.headers.authorization;
+                        if(!authorization) {
+                            res();
+                            return;
+                        }
+                        const token = authorization.split(' ')[1];
+                        jwt.verify(token, DEFAULT_SECRET, (err, decoded) => {
+                            if(err) {
+                                throw new ApolloError("JWT token is invalid.");
+                            } else {
+                                res({user: decoded});
+                            }
+                        });
+                    });
+                },
+            }, {
+                server: ws,
+                path: '/subscriptions',
+            });
+        });
 };
 
 if (module.parent) {
-    module.exports = { createServer, launchServer };
+    module.exports = { createGraphqlServer, launchServer };
 } else {
     launchServer({ port: process.env.PORT, secret: process.env.SECRET }).then(
     /* eslint-disable no-console */
