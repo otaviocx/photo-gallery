@@ -66,10 +66,10 @@ class PhotoService {
      * Upload a new photo to the logged user's gallery.
      */
     async uploadPhoto(image, caption = '', isPrivate = false) {
-        imageObj = await image;
-        imageBuffer = await streamToBuffer(imageObj.stream);
-        imageBase64 = imageBuffer.toString('base64');
-        dimensions = sizeOf(imageBuffer);
+        const imageObj = await image;
+        const imageBuffer = await streamToBuffer(imageObj.stream);
+        const imageBase64 = imageBuffer.toString('base64');
+        const dimensions = sizeOf(imageBuffer);
 
         return await this.photoRepository.insert({
             caption,

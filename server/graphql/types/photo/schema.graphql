@@ -16,8 +16,8 @@ type Query {
 }
 
 type Mutation {
-    uploadPhoto(image: Upload!, caption: String, private: Boolean): Photo @loggedIn
-    editPhoto(id: ID!, caption: String, private: Boolean): Photo @loggedIn
+    uploadPhoto(image: Upload!, caption: String, isPrivate: Boolean): Photo @loggedIn
+    editPhoto(id: ID!, caption: String, isPrivate: Boolean): Photo @loggedIn
     deletePhoto(id: ID!): Boolean @loggedIn
 }
 
