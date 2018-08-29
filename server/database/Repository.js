@@ -33,7 +33,15 @@ class Repository {
         const seq = await this.idSeq.findOne({
             _id: this.model,
         });
-        const oldId = (seq) ? seq.value : 0;
+        let oldId = 0;
+        if(!seq) {
+            this.idSeq.insert({
+                _id: this.model,
+                value: oldId
+            })
+        } else {
+            oldId = seq.value;
+        }
         const newId = oldId + 1;
         return this.idSeq.update({ _id: this.model }, { value: newId }).then(() => newId);
     }
@@ -68,8 +76,8 @@ class Repository {
     }
 
     async insert(object) {
-        if(!this.object._id) {
-            this.object._id = this.getNextId();
+        if(!object._id) {
+            object._id = await this.getNextId();
         }
         return await this.storage.insert(object);
     }
