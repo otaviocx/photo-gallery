@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const crypto = require("crypto");
 
 const fetchPlaceholderImage = async (type, width, height) => {
     const url = `http://place${type}.com/${width}/${height}`;
@@ -7,10 +8,10 @@ const fetchPlaceholderImage = async (type, width, height) => {
     return imageBuffer.toString('base64');
 };
 
-const testUsers = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }].map(({ id, name }) => ({
+const testUsers = () => [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }].map(({ id, name }) => ({
     _id: id,
     name,
-    password: 'testPassword',
+    password: crypto.createHash("sha256").update('testPassword', 'utf8').digest('hex'),
 }));
 
 const testPhotos = async () =>
@@ -62,7 +63,7 @@ const testPhotos = async () =>
 
 module.exports = {
     up: async (db) => {
-        await db.users.insert(testUsers);
-        await db.photos.insert(await testPhotos());
+        await db.user.insert(testUsers());
+        await db.photo.insert(await testPhotos());
     },
 };
