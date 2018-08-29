@@ -28,10 +28,11 @@ const createRepositories = () => {
     }
 }
 
+const jwtBlacklistService = new JwtBlacklistService();
+
 const createServices = (user, repos) => { 
     const userService = new UserService(repos.userRepository);
     const photoService = new PhotoService(repos.photoRepository, user);
-    const jwtBlacklistService = JwtBlacklistService.getInstance();
     const authService = new AuthService(userService, jwtBlacklistService, DEFAULT_SECRET);
     
     return { 
@@ -42,7 +43,7 @@ const createServices = (user, repos) => {
 }
 
 const isRevokedCallback = async (req, payload, done) => {
-    const isRevoked = await JwtBlacklistService.getInstance().isRevoked(payload);
+    const isRevoked = jwtBlacklistService.isRevoked(payload);
     done(null, isRevoked);
 }
 
@@ -63,7 +64,7 @@ const addDecodedTokenToRequest = () => (req, res, next) => {
         return;
     }
     const dtoken = jwt.decode(token);
-    set(req, 'token', dtoken.payload);
+    set(req, 'token', dtoken);
     next();
 }
 
@@ -86,7 +87,7 @@ const createServer = async ({ secret = DEFAULT_SECRET }) => {
             schema, 
             context: { 
                 user,
-                ...token,
+                ...{token},
                 ...createServices(user, repos) 
             } 
         })),

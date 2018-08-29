@@ -2,33 +2,30 @@ const { ApolloError } = require('apollo-server');
 const storage = require('node-persist');
 
 function validateJID(token) {
-    if(!token.jid) {
+    if(!token || !token.jti) {
         throw new ApolloError("The given token is invalid.");
     }
 }
 
 class JwtBlacklistService {
-    constructor(storage) {
+    constructor() {
         this.storage = storage;
+        this.storage.initSync({logging: true});
     }
 
-    static async getInstance() {
-        if(!JwtBlacklistService.prototype.instance) {
-            await storage.init({logging: true});
-            JwtBlacklistService.prototype.instance = new JwtBlacklistService(storage);
+    revoke(token) {
+        validateJID(token);
+        return this.storage.setItemSync(token.jti, true);
+    }
+
+    isRevoked(token) {
+        validateJID(token);
+        let revoked = false;
+        try {
+            revoked = this.storage.getItemSync(token.jti);
+        } catch(error) {
+            revoked = false;
         }
-        return JwtBlacklistService.prototype.instance;
-    }
-
-    async revoke(token) {
-        validateJID(token);
-        await this.storage.setItem(token.jid, true);
-    }
-
-    async isRevoked(token) {
-        validateJID(token);
-        let revoked = await this.storage.getItem(token.jid);
-        console.log(revoked);
         return !!revoked;
     }
 }
