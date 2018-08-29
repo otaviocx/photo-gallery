@@ -11,6 +11,7 @@ export const GET_PHOTO = gql`
             height
             image
             caption
+            private
             owner {
                 id
                 name

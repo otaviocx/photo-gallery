@@ -1,17 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
-import jwt from 'jsonwebtoken';
 import LogoutLink from './LogoutLink';
-
-function isLoggedin() {
-    return !!localStorage.getItem('token');
-}
-
-function getUserName() {
-    const token = localStorage.getItem('token');
-    const dtoken = jwt.decode(token);
-    return dtoken.name;
-}
+import { getLoggedUser, isLoggedin } from '../utils';
 
 class HeaderLinks extends Component {
 
@@ -19,13 +9,15 @@ class HeaderLinks extends Component {
         if(isLoggedin()) {
             return (
                 <div>
-                    <span className="welcome">Hello, {getUserName()}! </span>
+                    <span className="welcome">Hello, {getLoggedUser().name}! </span>
+                    <Link className="button" to="/upload">Upload Image</Link>
                     <LogoutLink />
                 </div>
             )
         } else {
             return (
                 <div>
+                    <Link className="button" to="/">Home</Link>
                     <Link className="button" to="/login">Login</Link>
                     <Link className="button" to="/register">Register</Link>
                 </div>

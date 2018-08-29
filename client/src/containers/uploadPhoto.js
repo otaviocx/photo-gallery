@@ -4,8 +4,8 @@ import { gql } from 'apollo-boost';
 import { Mutation } from 'react-apollo';
 
 export const UPLOAD_PHOTO = gql`
-    mutation uploadPhoto($image: Upload!, $caption: String, $private: Boolean) {
-        uploadPhoto(image: $image, caption: $caption, private: $private) {
+    mutation uploadPhoto($image: Upload!, $caption: String, $isPrivate: Boolean) {
+        uploadPhoto(image: $image, caption: $caption, isPrivate: $isPrivate) {
             id
         }
     }

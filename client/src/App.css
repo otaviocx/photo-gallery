@@ -16,15 +16,24 @@
   font-size: large;
 }
 
-.button {
-  background-color: rgb(0, 100, 20);
+.button, .small-button {
   border: none;
   color: white;
-  padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
+}
+
+.button {
+  background-color: rgb(0, 100, 20);
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.small-button {
+  background-color: rgb(0, 20, 100);
+  padding: 5px 10px;
+  font-size: 12px;
 }

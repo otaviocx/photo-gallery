@@ -4,6 +4,7 @@ import PhotoList from './components/PhotoList';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import HeaderLinks from './components/HeaderLinks';
+import PhotoForm from './components/PhotoForm';
 import './App.css';
 
 const App = () => (
@@ -16,6 +17,7 @@ const App = () => (
             <Route exact path="/" component={PhotoList} />
             <Route exact path="/login" component={LoginForm} />
             <Route exact path="/register" component={RegisterForm} />
+            <Route exact path="/upload" component={PhotoForm} />
         </div>
     </BrowserRouter>
 );
