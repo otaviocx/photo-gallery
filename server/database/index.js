@@ -5,7 +5,7 @@ const pkg = require('../package.json');
 
 const defaultDatabaseFilename = () => path.join(homedir(), `.${pkg.name}`);
 
-const modelNames = ['users', 'photos'];
+const modelNames = ['user', 'photo'];
 
 const createDatabase = ({ filename = defaultDatabaseFilename(), autoload = true, ...rest } = {}) =>
     modelNames.reduce(
