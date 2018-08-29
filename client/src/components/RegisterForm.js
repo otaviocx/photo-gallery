@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import Register from '../containers/register'
 import UserForm from './UserForm'
+import { setToken } from '../utils';
+
 import './Forms.css'
 
 class RegisterForm extends Component {
@@ -9,7 +11,7 @@ class RegisterForm extends Component {
         return (
             <Register
                 onCompleted={({ register }) => {
-                    localStorage.setItem('token', register);
+                    setToken(register);
                     this.props.history.push('/');
                     window.location.reload();
                 }}

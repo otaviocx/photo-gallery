@@ -30,7 +30,6 @@ export const PhotoDeleteButton = ({photoId}) => {
 }
 
 export const PhotoActions = ({photo}) => {
-    console.log(getLoggedUser(), photo.owner);
     if(isLoggedin() && getLoggedUser()._id === parseInt(photo.owner.id, 10)) {
         return (
             <div>

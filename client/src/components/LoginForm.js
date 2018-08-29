@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Login from '../containers/login'
 import UserForm from './UserForm'
+import { setToken } from '../utils';
 import './Forms.css'
 
 class LoginForm extends Component {
@@ -9,7 +10,7 @@ class LoginForm extends Component {
         return (
             <Login
                 onCompleted={({ login }) => {
-                    localStorage.setItem('token', login);
+                    setToken(login);
                     this.props.history.push('/');
                     window.location.reload();
                 }}

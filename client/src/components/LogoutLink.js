@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Logout from '../containers/logout';
+import { removeToken } from '../utils';
 
 class LogoutLink extends Component {
 
@@ -7,7 +8,7 @@ class LogoutLink extends Component {
         return (
             <Logout
                 onCompleted={() => {
-                    localStorage.removeItem('token');
+                    removeToken();
                     window.location.href = "/";
                 }}
             >

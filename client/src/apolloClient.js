@@ -4,11 +4,17 @@ import { ApolloProvider } from 'react-apollo';
 import { createUploadLink } from 'apollo-upload-client';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { WebSocketLink } from 'apollo-link-ws';
+import { split } from 'apollo-link';
+import { getMainDefinition } from 'apollo-utilities';
+import { getToken } from './utils';
 
-const httpLink = createUploadLink({ uri: 'http://localhost:3001/graphql' });
+const HOST = "localhost:3001"
+
+const httpLink = createUploadLink({ uri: "http://"+HOST+"/graphql" });
 
 const authLink = setContext((_, { headers }) => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     return {
         headers: {
         ...headers,
@@ -17,9 +23,25 @@ const authLink = setContext((_, { headers }) => {
     }
 });
 
+const wsLink = new WebSocketLink({
+    uri: 'ws://'+HOST+'/subscriptions',
+    options: {
+        reconnect: true
+    },
+});
+  
+const link = split(
+    ({ query }) => {
+        const { kind, operation } = getMainDefinition(query)
+        return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    wsLink,
+    authLink.concat(httpLink)
+)
+
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link,
     cache
 });
   
