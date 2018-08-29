@@ -19,8 +19,6 @@ class PhotoListInner extends Component {
                 const newPhoto = subscriptionData.data.photoAdded;
                 let newList = {...prev};
                 newList.photos = [newPhoto].concat(newList.photos);
-                console.log("add");
-                console.log(newList);
                 return newList;
             }
         })
@@ -36,8 +34,6 @@ class PhotoListInner extends Component {
                 newList.photos = newList.photos.filter((photo) => {
                     return photo.id !== deletedId
                 });
-                console.log("delete");
-                console.log(newList);
                 return newList;
             }
         })
