@@ -10,6 +10,7 @@ class HeaderLinks extends Component {
             return (
                 <div>
                     <span className="welcome">Hello, {getLoggedUser().name}! </span>
+                    <Link className="button" to="/">Home</Link>
                     <Link className="button" to="/upload">Upload Image</Link>
                     <LogoutLink />
                 </div>
