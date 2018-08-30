@@ -8,8 +8,8 @@ function validateJID(token) {
 }
 
 class JwtBlacklistService {
-    constructor() {
-        this.storage = storage;
+    constructor(storageProvider) {
+        this.storage = (storageProvider) ? storageProvider : storage;
         this.storage.initSync({logging: true});
     }
 
