@@ -10,6 +10,18 @@ export const PHOTO_ADDED = gql`
   }
 `;
 
+export const PHOTO_EDITED = gql`
+  subscription onPhotoAdded {
+    photoEdited {
+      id
+      width
+      height
+      private
+      ownerId
+    }
+  }
+`;
+
 export const PHOTO_DELETED = gql`
   subscription onPhotoEdited {
     photoDeleted

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import PhotoData from '../containers/photo';
 import DeletePhoto from '../containers/deletePhoto'
@@ -34,6 +35,7 @@ export const PhotoActions = ({photo}) => {
         return (
             <div>
                 <PhotoDeleteButton photoId={photo.id} />
+                <Link className="small-button" to={"/edit/"+photo.id}>Edit</Link>
             </div>
         )
     } else {

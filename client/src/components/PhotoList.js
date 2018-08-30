@@ -2,13 +2,42 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import AllPhotos from '../containers/allPhotos';
 import Photo from './Photo';
-import {PHOTO_ADDED, PHOTO_DELETED} from '../containers/subscriptions';
+import {PHOTO_ADDED, PHOTO_DELETED, PHOTO_EDITED} from '../containers/subscriptions';
+import { getLoggedUser } from '../utils';
+
+function addPhoto(prev, newPhoto) {
+    let newList = {...prev};
+    newList.photos = [newPhoto].concat(newList.photos);
+    return newList;
+}
+
+function deletePhoto(prev, photoId) {
+    let newList = {...prev};
+    newList.photos = newList.photos.filter((photo) => {
+        return photo.id !== photoId
+    });
+    return newList;
+}
+
+function checkUserPermission(user, photo) {
+    if(!photo.private) {
+        return true;
+    }
+    if(!user) {
+        return false;
+    }
+    if(user.id === photo.ownerId) {
+        return true;
+    }
+    return false;
+}
 
 class PhotoListInner extends Component {
 
     componentDidMount() {
         this.subscriveToAddedPhotos(this.props.subscribeToMore);
         this.subscriveToDeletedPhotos(this.props.subscribeToMore);
+        this.subscriveToEditedPhotos(this.props.subscribeToMore);
     }
 
     async subscriveToAddedPhotos(subscribeToMore) {
@@ -16,10 +45,7 @@ class PhotoListInner extends Component {
             document: PHOTO_ADDED,
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
-                const newPhoto = subscriptionData.data.photoAdded;
-                let newList = {...prev};
-                newList.photos = [newPhoto].concat(newList.photos);
-                return newList;
+                return addPhoto(prev, subscriptionData.data.photoAdded);
             }
         })
     }
@@ -29,11 +55,21 @@ class PhotoListInner extends Component {
             document: PHOTO_DELETED,
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev;
-                const deletedId = subscriptionData.data.photoDeleted;
-                let newList = {...prev};
-                newList.photos = newList.photos.filter((photo) => {
-                    return photo.id !== deletedId
-                });
+                return deletePhoto(prev, subscriptionData.data.photoDeleted);
+            }
+        })
+    }
+
+    async subscriveToEditedPhotos(subscribeToMore) {
+        subscribeToMore({
+            document: PHOTO_EDITED,
+            updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const photo = subscriptionData.data.photoEdited;
+                var newList = deletePhoto(prev, photo.id);
+                if(checkUserPermission(getLoggedUser(), photo)) {
+                    newList = addPhoto(newList, photo);
+                }
                 return newList;
             }
         })

@@ -50,6 +50,7 @@ UserForm.propTypes = {
     onSubmit: PropTypes.func,
     externalError: PropTypes.object,
     actionName: PropTypes.string,
+    loading: PropTypes.bool,
 };
 
 export default UserForm;
