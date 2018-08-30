@@ -32,12 +32,10 @@ const createRepositories = () => {
     }
 }
 
-const jwtBlacklistService = new JwtBlacklistService();
-
-const createServices = (user, repos) => { 
+const createServices = (user, repos, secret, jwtBlacklistService) => { 
     const userService = new UserService(repos.userRepository);
     const photoService = new PhotoService(repos.photoRepository, user);
-    const authService = new AuthService(userService, jwtBlacklistService, DEFAULT_SECRET);
+    const authService = new AuthService(userService, jwtBlacklistService, secret);
     
     return { 
         userService, 
@@ -75,6 +73,7 @@ const addDecodedTokenToRequest = () => (req, res, next) => {
 const createGraphqlServer = async ({ schema, secret = DEFAULT_SECRET }) => {
     const app = express();
     const repos = createRepositories();
+    const jwtBlacklistService = new JwtBlacklistService();
 
     app.use(
         '/graphql',
@@ -92,7 +91,7 @@ const createGraphqlServer = async ({ schema, secret = DEFAULT_SECRET }) => {
             context: { 
                 user,
                 ...{token},
-                ...createServices(user, repos) 
+                ...createServices(user, repos, secret, jwtBlacklistService) 
             } 
         })),
     );
