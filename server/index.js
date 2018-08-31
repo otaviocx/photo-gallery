@@ -136,7 +136,7 @@ const launchServer = async ({ port = DEFAULT_PORT, secret }) => {
                 server: ws,
                 path: '/subscriptions',
             });
-            return {port, server}
+            return {port, server};
         });
 };
 
