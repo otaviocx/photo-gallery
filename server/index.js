@@ -44,7 +44,7 @@ const createServices = (user, repos, secret, jwtBlacklistService) => {
     }
 }
 
-const isRevokedCallback = async (req, payload, done) => {
+const isRevokedCallback = (jwtBlacklistService) => async (req, payload, done) => {
     const isRevoked = jwtBlacklistService.isRevoked(payload);
     done(null, isRevoked);
 }
@@ -81,7 +81,7 @@ const createGraphqlServer = async ({ schema, secret = DEFAULT_SECRET }) => {
         jwtExpress({ 
             secret, 
             credentialsRequired: false,
-            isRevoked: isRevokedCallback
+            isRevoked: isRevokedCallback(jwtBlacklistService)
         }),
         addDecodedTokenToRequest(),
         bodyParser.json(),
